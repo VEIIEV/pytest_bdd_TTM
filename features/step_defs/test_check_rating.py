@@ -58,36 +58,38 @@ def test_open_filters(browser):
 def test_set_price_border(browser, price: str):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
-    if filter_existence_check(driver):
-        maxprice: WebElement = driver.find_element(by=By.XPATH, value='//div[2]/input')
-        maxprice.click()
-        maxprice.clear()
-        maxprice.send_keys(price)
-        maxprice.send_keys(Keys.ENTER)
-        try_to_handle_simple_captcha(driver)
-        assert maxprice.get_attribute('value') == price
+    assert filter_existence_check(driver), 'filter page doesnt work'
+
+    maxprice: WebElement = driver.find_element(by=By.XPATH, value='//div[2]/input')
+    maxprice.click()
+    maxprice.clear()
+    maxprice.send_keys(price)
+    maxprice.send_keys(Keys.ENTER)
+    try_to_handle_simple_captcha(driver)
+    assert maxprice.get_attribute('value') == price
 
 
 @then(parsers.parse("the diagonal of the screen from {diagonal} inches"))
 def test_set_diagonal(browser, diagonal):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
-    if filter_existence_check(driver):
-        diagonal_expander = driver.find_element(
-            By.XPATH, '/html/body/div[2]/section/div[2]/div/div/div[2]/div[1]/div[20]/div/button')
-        if not diagonal_expander.get_attribute('aria-expanded'):
-            diagonal_expander.click()
+    assert filter_existence_check(driver), 'filter page doesnt work'
 
-        wait = WebDriverWait(driver, timeout=5)
-        min_diagonal = wait.until(
-            expected_conditions.element_to_be_clickable((By.XPATH, '//*[@id="14805766"]/div/div[1]/input'))
-        )
-        min_diagonal.click()
-        min_diagonal.clear()
-        min_diagonal.send_keys(diagonal)
-        min_diagonal.send_keys(Keys.ENTER)
-        try_to_handle_simple_captcha(driver)
-        assert min_diagonal.get_attribute('value') == diagonal
+    diagonal_expander = driver.find_element(
+        By.XPATH, '/html/body/div[2]/section/div[2]/div/div/div[2]/div[1]/div[20]/div/button')
+    if not diagonal_expander.get_attribute('aria-expanded'):
+        diagonal_expander.click()
+
+    wait = WebDriverWait(driver, timeout=5)
+    min_diagonal = wait.until(
+        expected_conditions.element_to_be_clickable((By.XPATH, '//*[@id="14805766"]/div/div[1]/input'))
+    )
+    min_diagonal.click()
+    min_diagonal.clear()
+    min_diagonal.send_keys(diagonal)
+    min_diagonal.send_keys(Keys.ENTER)
+    try_to_handle_simple_captcha(driver)
+    assert min_diagonal.get_attribute('value') == diagonal
 
 
 @then(parsers.parse("at least {amount} of any manufacturers"))
@@ -95,6 +97,8 @@ def test_set_manufacturers(browser, amount):
     driver: WebDriver = browser
     amount = int(amount)
     try_to_handle_simple_captcha(driver)
+    assert filter_existence_check(driver), 'filter page doesnt work'
+
     if filter_existence_check(driver):
         wait = WebDriverWait(driver, timeout=5)
         checkbox_list: list[WebElement] = wait.until(
@@ -119,14 +123,14 @@ def test_count_smartphone(browser):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
     scroll_to_page_bottom(driver)
-    PHONE_COUNTER = len(driver.find_elements(By.XPATH, '//*[@id="searchResults"]/div/div/div/div/div/div')) - 1
 
+    PHONE_COUNTER = len(driver.find_elements(By.XPATH, '//*[@id="searchResults"]/div/div/div/div/div/div')) - 1
     wait = WebDriverWait(driver, timeout=5)
-    choosen_phone1: WebElement = wait.until(expected_conditions.element_to_be_clickable(
+    choosen_phone: WebElement = wait.until(expected_conditions.element_to_be_clickable(
         (By.XPATH, f'//*[@id="searchResults"]/div/div/div/div/div/div[{PHONE_COUNTER + 1}]//article/div[1]/h3/a'
          ))
     )
-    CHOOSEN_PHONE_LINK = choosen_phone1.get_attribute("href")
+    CHOOSEN_PHONE_LINK = choosen_phone.get_attribute("href")
 
 
 @then(parsers.parse("change sort type on sort by '{sort_type}'"))
@@ -141,6 +145,7 @@ def test_click_on_remembered_object(browser):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
     scroll_to_page_bottom(driver)
+
     try:
         wait = WebDriverWait(driver, timeout=5)
         choosen_phone: WebElement = wait.until(expected_conditions.element_to_be_clickable(
@@ -148,7 +153,6 @@ def test_click_on_remembered_object(browser):
         )
     except TimeoutException:
         assert False, "No selected phone on page"
-
     # если элемент не кликабл, это делает его кликабл
     driver.execute_script("arguments[0].click();", choosen_phone)
     sleep(10)

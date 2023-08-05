@@ -23,9 +23,10 @@ def filter_existence_check(driver: WebDriver):
     :return:
     """
     try:
-        driver.find_element(By.XPATH, '/html/body/div[2]/section/div[2]/div/div/div[2]/div[1]/div[1]')
+        driver.find_element(By.XPATH, '/html/body/div[2]/section/div[2]/div/div/div[2]/div[3]/div[9]/div/button')
+        return True
     except NoSuchElementException:
-        assert False, 'filter page doesnt work'
+        return False
 
 
 def scroll_to_page_bottom(driver: WebDriver):
