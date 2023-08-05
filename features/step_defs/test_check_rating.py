@@ -12,7 +12,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-from features.step_defs.utils import *
+from features.step_defs.POM.yandex_page_model import YandexMainPage
+from features.step_defs.utils import try_to_handle_simple_captcha, filter_existence_check, scroll_to_page_bottom
 
 scenarios('../check_rating.feature')
 
@@ -34,11 +35,8 @@ def test_open_main_page(browser):
 def test_open_smartphone_section(browser):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
-    catalog_buttom = driver.find_element(by=By.XPATH,
-                                         value='/html/body/div[2]/header/div[1]/div/div/noindex[1]/div/div/button')
-    catalog_buttom.click()
-    smartphone_link: WebElement = driver.find_element(by=By.XPATH, value="//a[contains(text(),'Смартфоны')]")
-    smartphone_link.click()
+    YandexMainPage.get_catalog_button(driver).click()
+    YandexMainPage.get_smartphone_link(driver).click()
     try_to_handle_simple_captcha(driver)
     assert driver.title == "Смартфоны — купить по низкой цене на Яндекс Маркете"
 

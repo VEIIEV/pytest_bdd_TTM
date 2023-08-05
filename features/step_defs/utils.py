@@ -23,8 +23,7 @@ def filter_existence_check(driver: WebDriver):
     :return:
     """
     try:
-        driver.find_element(By.XPATH, '/html/body/div[2]/section/div[2]/div/div/div[2]/div[3]/div[9]/div/button')
-        return True
+        return driver.find_element(By.XPATH, '/html/body/div[2]/section/div[2]/div/div/div[2]/div[3]/div[9]/div/button').is_displayed()
     except NoSuchElementException:
         return False
 
