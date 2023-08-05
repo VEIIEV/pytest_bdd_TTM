@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pytest-bdd-ttm"
+version = "0.1.0"
+description = ""
+authors = ["veiiev <worldloflwarcraft@mail.ru>"]
+readme = "README.md"
+packages = [{include = "pytest_bdd_ttm"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest-bdd = "^6.1.1"
+httpx = "^0.24.1"
+selenium = "^4.11.2"
+webdriver-manager = "^4.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
