@@ -3,7 +3,7 @@ Feature: Yandex Market user Journey
   Open/Close browser implement in fixture
 
 
-  @search
+#  @search
   Scenario: Check ware's rating but ya market sucks
         # яндекс маркет иногда не грузит фильтры, этот сценарий их не использует
 
@@ -16,7 +16,7 @@ Feature: Yandex Market user Journey
     Then find and click on remembered object
     And display the rating of the selected product
 
-#  @search
+  @search
   Scenario: Check ware's rating
 
     Given Open market.yandex.ru
