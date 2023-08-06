@@ -16,7 +16,7 @@ Feature: Yandex Market user Journey
     Then find and click on remembered object
     And display the rating of the selected product
 
-  @search
+#  @search
   Scenario: Check ware's rating
 
     Given Open market.yandex.ru

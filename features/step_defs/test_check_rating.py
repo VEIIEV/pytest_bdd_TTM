@@ -1,25 +1,23 @@
-import time
 from time import sleep
+
+from pytest_bdd import given, then, scenarios
 from pytest_bdd import parsers
-import pytest
-from pytest_bdd import scenario, given, when, then, scenarios
-from selenium.common import NoSuchElementException, TimeoutException
+from selenium.common import TimeoutException
 from selenium.webdriver import Keys
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-from features.step_defs.POM.yandex_page_model import YandexMainPage
+from features.step_defs.POM.yandex_page_model import YandexMainPage, YandexCatalogSmartphonePage, YandexFilterPage
 from features.step_defs.utils import try_to_handle_simple_captcha, filter_existence_check, scroll_to_page_bottom
 
 scenarios('../check_rating.feature')
 
 PHONE_COUNTER: int = 0
 
-CHOOSEN_PHONE_LINK: str
+SELECTED_PHONE_LINK: str
 
 
 @given("Open market.yandex.ru")
@@ -45,9 +43,7 @@ def test_open_smartphone_section(browser):
 def test_open_filters(browser):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
-    filters: WebElement = driver.find_element(by=By.XPATH,
-                                              value="//aside[@id='searchFilters']/div/div[4]/div/div/div/div/a/button/span/span")
-    filters.click()
+    YandexCatalogSmartphonePage.get_filters(driver).click()
     try_to_handle_simple_captcha(driver)
     assert driver.find_element(by=By.XPATH, value="//a[contains(text(),'Показать')]").is_displayed()
 
@@ -58,7 +54,7 @@ def test_set_price_border(browser, price: str):
     try_to_handle_simple_captcha(driver)
     assert filter_existence_check(driver), 'filter page doesnt work'
 
-    maxprice: WebElement = driver.find_element(by=By.XPATH, value='//div[2]/input')
+    maxprice: WebElement = YandexFilterPage.get_maxprice_from(driver)
     maxprice.click()
     maxprice.clear()
     maxprice.send_keys(price)
@@ -73,15 +69,15 @@ def test_set_diagonal(browser, diagonal):
     try_to_handle_simple_captcha(driver)
     assert filter_existence_check(driver), 'filter page doesnt work'
 
-    diagonal_expander = driver.find_element(
-        By.XPATH, '/html/body/div[2]/section/div[2]/div/div/div[2]/div[1]/div[20]/div/button')
+    diagonal_expander = YandexFilterPage.get_diagonal_expander(driver)
+    # todo убрать принты
     if not diagonal_expander.get_attribute('aria-expanded'):
-        diagonal_expander.click()
+        print(type(diagonal_expander.get_attribute('aria-expanded')))
+        print(diagonal_expander.get_attribute('aria-expanded'))
+        # если использовать простой diagonal_expander.click() не работает
+        driver.execute_script("arguments[0].click();", diagonal_expander)
 
-    wait = WebDriverWait(driver, timeout=5)
-    min_diagonal = wait.until(
-        expected_conditions.element_to_be_clickable((By.XPATH, '//*[@id="14805766"]/div/div[1]/input'))
-    )
+    min_diagonal = YandexFilterPage.get_min_diagonal_form(driver)
     min_diagonal.click()
     min_diagonal.clear()
     min_diagonal.send_keys(diagonal)
@@ -97,14 +93,13 @@ def test_set_manufacturers(browser, amount):
     try_to_handle_simple_captcha(driver)
     assert filter_existence_check(driver), 'filter page doesnt work'
 
-    if filter_existence_check(driver):
-        wait = WebDriverWait(driver, timeout=5)
-        checkbox_list: list[WebElement] = wait.until(
-            expected_conditions.visibility_of_all_elements_located((By.XPATH, '//*[@id="7893318"]//input'))
-        )
-        for box in checkbox_list[0:amount]:
-            box.click()
-        sleep(5)
+    wait = WebDriverWait(driver, timeout=5)
+    checkbox_list: list[WebElement] = wait.until(
+        expected_conditions.visibility_of_all_elements_located((By.XPATH, '//*[@id="7893318"]//input'))
+    )
+    for box in checkbox_list[0:amount]:
+        box.click()
+    sleep(5)
 
 
 @then('click button "Show"')
@@ -117,25 +112,21 @@ def test_apply_selected_filters(browser):
 
 @then("count smartphone on first page and remember last one from the list")
 def test_count_smartphone(browser):
-    global PHONE_COUNTER, CHOOSEN_PHONE_LINK
+    global PHONE_COUNTER, SELECTED_PHONE_LINK
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
     scroll_to_page_bottom(driver)
 
     PHONE_COUNTER = len(driver.find_elements(By.XPATH, '//*[@id="searchResults"]/div/div/div/div/div/div')) - 1
-    wait = WebDriverWait(driver, timeout=5)
-    choosen_phone: WebElement = wait.until(expected_conditions.element_to_be_clickable(
-        (By.XPATH, f'//*[@id="searchResults"]/div/div/div/div/div/div[{PHONE_COUNTER + 1}]//article/div[1]/h3/a'
-         ))
-    )
-    CHOOSEN_PHONE_LINK = choosen_phone.get_attribute("href")
+    selected_phone = YandexCatalogSmartphonePage.get_selected_phone(driver, PHONE_COUNTER)
+    SELECTED_PHONE_LINK = selected_phone.get_attribute("href")
 
 
 @then(parsers.parse("change sort type on sort by '{sort_type}'"))
 def test_change_sort_type(browser, sort_type):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
-    driver.find_element(By.XPATH, f"//noindex/div/button[contains(text(),'{sort_type}')]").click()
+    YandexCatalogSmartphonePage.get_sort_button(driver, sort_type).click()
 
 
 @then("find and click on remembered object")
@@ -147,7 +138,7 @@ def test_click_on_remembered_object(browser):
     try:
         wait = WebDriverWait(driver, timeout=5)
         choosen_phone: WebElement = wait.until(expected_conditions.element_to_be_clickable(
-            (By.XPATH, f'//a[@href="{CHOOSEN_PHONE_LINK}"]'))
+            (By.XPATH, f'//a[@href="{SELECTED_PHONE_LINK}"]'))
         )
     except TimeoutException:
         assert False, "No selected phone on page"
