@@ -17,8 +17,11 @@ scenarios('../check_rating.feature')
 
 PHONE_COUNTER: int = 0
 
-SELECTED_PHONE_LINK: str
+SELECTED_PHONE_TEXT: str
 
+
+# todo добавить скриншоты
+# todo проверить что рейтинг выводится нормально
 
 @given("Open market.yandex.ru")
 def test_open_main_page(browser):
@@ -112,14 +115,14 @@ def test_apply_selected_filters(browser):
 
 @then("count smartphone on first page and remember last one from the list")
 def test_count_smartphone(browser):
-    global PHONE_COUNTER, SELECTED_PHONE_LINK
+    global PHONE_COUNTER, SELECTED_PHONE_TEXT
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
     scroll_to_page_bottom(driver)
 
     PHONE_COUNTER = len(driver.find_elements(By.XPATH, '//*[@id="searchResults"]/div/div/div/div/div/div')) - 1
     selected_phone = YandexCatalogSmartphonePage.get_selected_phone(driver, PHONE_COUNTER)
-    SELECTED_PHONE_LINK = selected_phone.get_attribute("href")
+    SELECTED_PHONE_TEXT = selected_phone.text
 
 
 @then(parsers.parse("change sort type on sort by '{sort_type}'"))
@@ -136,21 +139,28 @@ def test_click_on_remembered_object(browser):
     scroll_to_page_bottom(driver)
 
     try:
-        wait = WebDriverWait(driver, timeout=5)
-        choosen_phone: WebElement = wait.until(expected_conditions.element_to_be_clickable(
-            (By.XPATH, f'//a[@href="{SELECTED_PHONE_LINK}"]'))
+        wait = WebDriverWait(driver, timeout=10)
+        choosen_phone: WebElement = wait.until(expected_conditions.visibility_of_element_located(
+            (By.XPATH, f"//a/span[contains(text(),'{SELECTED_PHONE_TEXT}')]/.."))
         )
     except TimeoutException:
         assert False, "No selected phone on page"
     # если элемент не кликабл, это делает его кликабл
     driver.execute_script("arguments[0].click();", choosen_phone)
-    sleep(10)
 
 
-@given("display the rating of the selected product")
+@then("display the rating of the selected product")
 def test_display_product_rating(browser):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
-    rating = driver.find_element(By.XPATH,
-                                 '/html/body/div[2]/div[2]/main/div[4]/div/div/div[2]/div/div/div[2]/div[1]/div[1]/span[2]')
+
+    wait = WebDriverWait(driver, timeout=10)
+    wait.until(expected_conditions.number_of_windows_to_be(2))
+    driver.switch_to.window(driver.window_handles[1])
+
+    rating = wait.until(
+        expected_conditions.visibility_of_element_located((
+            By.XPATH, '/html/body/div[2]/div[2]/main/div[4]/div/div/div[2]/div/div/div[2]/div[1]/div[1]/span[2]'))
+    )
     print(rating.text)
+    sleep(10)
