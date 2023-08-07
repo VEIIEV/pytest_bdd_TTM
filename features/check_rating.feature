@@ -12,11 +12,11 @@ Feature: Yandex Market user Journey
     And go to "All Filters"
     Then click button "Show"
     Then count smartphone on first page and remember last one from the list
-#    Then change sort type on sort by 'по цене'
+    Then change sort type on sort by 'по цене'
     Then find and click on remembered object
     And display the rating of the selected product
 
-#  @search
+  @search
   Scenario: Check ware's rating
 
     Given Open market.yandex.ru

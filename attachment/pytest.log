@@ -1,11 +1,19 @@
-2023-08-07 18:48:53 [INFO] ====== WebDriver manager ======
-2023-08-07 18:48:54 [INFO] Get LATEST chromedriver version for google-chrome
-2023-08-07 18:48:54 [INFO] Get LATEST chromedriver version for google-chrome
-2023-08-07 18:48:54 [INFO] There is no [win64] chromedriver "115.0.5790.170" for browser google-chrome "115.0.5790.170" in cache
-2023-08-07 18:48:54 [INFO] Get LATEST chromedriver version for google-chrome
-2023-08-07 18:48:54 [INFO] WebDriver version 115.0.5790.170 selected
-2023-08-07 18:48:54 [INFO] Modern chrome version https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5790.170/win32/chromedriver-win32.zip
-2023-08-07 18:48:54 [INFO] About to download new driver from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5790.170/win32/chromedriver-win32.zip
-2023-08-07 18:48:55 [INFO] Driver downloading response is 200
-2023-08-07 18:48:55 [INFO] Get LATEST chromedriver version for google-chrome
-2023-08-07 18:48:55 [INFO] Driver has been saved in cache [C:\Users\world\.wdm\drivers\chromedriver\win64\115.0.5790.170]
+2023-08-07 18:51:57 [INFO] ====== WebDriver manager ======
+2023-08-07 18:51:58 [INFO] Get LATEST chromedriver version for google-chrome
+2023-08-07 18:51:58 [INFO] Get LATEST chromedriver version for google-chrome
+2023-08-07 18:51:58 [INFO] There is no [win64] chromedriver "115.0.5790.170" for browser google-chrome "115.0.5790.170" in cache
+2023-08-07 18:51:58 [INFO] Get LATEST chromedriver version for google-chrome
+2023-08-07 18:51:58 [INFO] WebDriver version 115.0.5790.170 selected
+2023-08-07 18:51:58 [INFO] Modern chrome version https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5790.170/win32/chromedriver-win32.zip
+2023-08-07 18:51:58 [INFO] About to download new driver from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5790.170/win32/chromedriver-win32.zip
+2023-08-07 18:51:58 [INFO] Driver downloading response is 200
+2023-08-07 18:51:59 [INFO] Get LATEST chromedriver version for google-chrome
+2023-08-07 18:51:59 [INFO] Driver has been saved in cache [C:\Users\world\.wdm\drivers\chromedriver\win64\115.0.5790.170]
+2023-08-07 18:52:15 [INFO] yandex market successfully opened
+2023-08-07 18:52:42 [INFO] smartphone catalog successfully opened
+2023-08-07 18:53:03 [INFO] filters page successfully opened
+2023-08-07 18:53:30 [INFO] on page present smartphone: 48
+2023-08-07 18:53:30 [INFO] selected phone content text: Смартфон Infinix Note 30 (X6833B) 8/128 ГБ Global для РФ, Dual nano SIM, Obsidian Black
+2023-08-07 18:53:41 [INFO] selected phone found
+2023-08-07 18:53:54 [INFO] selected phone have rating: 4.8
+2023-08-07 18:53:54 [INFO] all test passed

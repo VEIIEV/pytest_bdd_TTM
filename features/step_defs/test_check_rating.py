@@ -175,10 +175,11 @@ def test_display_product_rating(browser):
     wait.until(expected_conditions.number_of_windows_to_be(2))
     driver.switch_to.window(driver.window_handles[1])
 
-    rating = wait.until(
+    rating: WebElement = wait.until(
         expected_conditions.visibility_of_element_located((
             By.XPATH, '/html/body/div[2]/div[2]/main/div[4]/div/div/div[2]/div/div/div[2]/div[1]/div[1]/span[2]'))
     )
-    logging.info(f'selected phone have rating: {rating}')
+
+    logging.info(f'selected phone have rating: {rating.text}')
     logging.info('all test passed')
     sleep(10)
