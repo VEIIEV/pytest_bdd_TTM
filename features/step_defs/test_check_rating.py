@@ -1,5 +1,7 @@
+import traceback
 from time import sleep
 
+import pytest
 from pytest_bdd import given, then, scenarios
 from pytest_bdd import parsers
 from selenium.common import TimeoutException
@@ -13,6 +15,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from features.step_defs.POM.yandex_page_model import YandexMainPage, YandexCatalogSmartphonePage, YandexFilterPage
 from features.step_defs.utils import try_to_handle_simple_captcha, filter_existence_check, scroll_to_page_bottom
 
+import logging
+
 scenarios('../check_rating.feature')
 
 PHONE_COUNTER: int = 0
@@ -21,7 +25,7 @@ SELECTED_PHONE_TEXT: str
 
 
 # todo добавить скриншоты
-# todo проверить что рейтинг выводится нормально
+
 
 @given("Open market.yandex.ru")
 def test_open_main_page(browser):
@@ -29,7 +33,8 @@ def test_open_main_page(browser):
     try_to_handle_simple_captcha(driver)
     driver.get('https://market.yandex.ru')
     try_to_handle_simple_captcha(driver)
-    assert driver.title == 'Интернет-магазин Яндекс Маркет — покупки с быстрой доставкой'
+    assert driver.title == 'Интернет-магазин Яндекс Маркет — покупки с быстрой доставкой', 'не получилось зайти на сайт'
+    logging.info("yandex market successfully opened")
 
 
 @given('in the "Catalog → Electronics" section, select "Smartphones"')
@@ -39,7 +44,8 @@ def test_open_smartphone_section(browser):
     YandexMainPage.get_catalog_button(driver).click()
     YandexMainPage.get_smartphone_link(driver).click()
     try_to_handle_simple_captcha(driver)
-    assert driver.title == "Смартфоны — купить по низкой цене на Яндекс Маркете"
+    assert driver.title == "Смартфоны — купить по низкой цене на Яндекс Маркете", 'не получилось открыть каталог смартфонов'
+    logging.info("smartphone catalog successfully opened")
 
 
 @given('go to "All Filters"')
@@ -48,7 +54,12 @@ def test_open_filters(browser):
     try_to_handle_simple_captcha(driver)
     YandexCatalogSmartphonePage.get_filters(driver).click()
     try_to_handle_simple_captcha(driver)
-    assert driver.find_element(by=By.XPATH, value="//a[contains(text(),'Показать')]").is_displayed()
+    assert driver.find_element(by=By.XPATH,
+                               value="//a[contains(text(),'Показать')]").is_displayed(), 'не получилось открыть список фильтров'
+    if filter_existence_check(driver):
+        logging.info("filters page successfully opened")
+    else:
+        logging.warning('filters page loaded uncorrect')
 
 
 @then(parsers.parse("set the search parameter to {price} rubles"))
@@ -123,6 +134,8 @@ def test_count_smartphone(browser):
     PHONE_COUNTER = len(driver.find_elements(By.XPATH, '//*[@id="searchResults"]/div/div/div/div/div/div')) - 1
     selected_phone = YandexCatalogSmartphonePage.get_selected_phone(driver, PHONE_COUNTER)
     SELECTED_PHONE_TEXT = selected_phone.text
+    logging.info(f'on page present smartphone: {PHONE_COUNTER}')
+    logging.info(f'selected phone content text: {SELECTED_PHONE_TEXT}')
 
 
 @then(parsers.parse("change sort type on sort by '{sort_type}'"))
@@ -130,6 +143,7 @@ def test_change_sort_type(browser, sort_type):
     driver: WebDriver = browser
     try_to_handle_simple_captcha(driver)
     YandexCatalogSmartphonePage.get_sort_button(driver, sort_type).click()
+    logging.info('sort type successfully changed')
 
 
 @then("find and click on remembered object")
@@ -143,10 +157,13 @@ def test_click_on_remembered_object(browser):
         choosen_phone: WebElement = wait.until(expected_conditions.visibility_of_element_located(
             (By.XPATH, f"//a/span[contains(text(),'{SELECTED_PHONE_TEXT}')]/.."))
         )
-    except TimeoutException:
+    except TimeoutException as t:
+        logging.error('No selected phone on page')
+        logging.error(t.with_traceback(traceback.print_exc()))
         assert False, "No selected phone on page"
     # если элемент не кликабл, это делает его кликабл
     driver.execute_script("arguments[0].click();", choosen_phone)
+    logging.info('selected phone found')
 
 
 @then("display the rating of the selected product")
@@ -162,5 +179,6 @@ def test_display_product_rating(browser):
         expected_conditions.visibility_of_element_located((
             By.XPATH, '/html/body/div[2]/div[2]/main/div[4]/div/div/div[2]/div/div/div[2]/div[1]/div[1]/span[2]'))
     )
-    print(rating.text)
+    logging.info(f'selected phone have rating: {rating}')
+    logging.info('all test passed')
     sleep(10)
