@@ -8,15 +8,15 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 class YandexMainPage:
-    catalog_button: WebElement
-    smartphone_link: WebElement
-
-    def __init__(self, driver: WebDriver):
-        if driver.title == 'Интернет-магазин Яндекс Маркет — покупки с быстрой доставкой':
-            self.catalog_button = driver.find_element(By.XPATH,
-                                                      '/html/body/div[2]/header/div[1]/div/div/noindex[1]/div/div/button')
-            self.smartphone_link = driver.find_element(By.XPATH, "//a[contains(text(),'Смартфоны')]")
-        super().__init__()
+    # catalog_button: WebElement
+    # smartphone_link: WebElement
+    #
+    # def __init__(self, driver: WebDriver):
+    #     if driver.title == 'Интернет-магазин Яндекс Маркет — покупки с быстрой доставкой':
+    #         self.catalog_button = driver.find_element(By.XPATH,
+    #                                                   '/html/body/div[2]/header/div[1]/div/div/noindex[1]/div/div/button')
+    #         self.smartphone_link = driver.find_element(By.XPATH, "//a[contains(text(),'Смартфоны')]")
+    #     super().__init__()
 
     @classmethod
     def get_catalog_button(cls, driver: WebDriver) -> WebElement:

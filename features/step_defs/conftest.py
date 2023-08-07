@@ -7,8 +7,8 @@ from selenium import webdriver
 @pytest.fixture()
 def browser():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    driver.implicitly_wait(3)
-    driver.set_script_timeout(3)
+    driver.implicitly_wait(10)
+    driver.set_script_timeout(10)
     driver.maximize_window()
     yield driver
     driver.close()
